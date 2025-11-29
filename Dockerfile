@@ -74,9 +74,9 @@ RUN CPPFLAGS="-I${OPENSSL_PREFIX}/include" \
     && make install
 
 # --- stunnel 5.76 с поддержкой OpenSSL 3.6.0 ---
-# 5.76 доступен в основном downloads/ каталоге, старые версии лежат в archive/5.x.[web:239][web:249]
+# 5.76 доступен в основном downloads/ каталоге, старые версии лежат в archive/5.x.
 WORKDIR /tmp/stunnel
-RUN curl -fsSL https://www.stunnel.org/downloads/stunnel-${STUNNEL_VERSION}.tar.gz \
+RUN curl -fsSL https://www.stunnel.org/downloads/archive/5.x/stunnel-${STUNNEL_VERSION}.tar.gz \
     | tar xz --strip 1
 
 RUN CPPFLAGS="-I${OPENSSL_PREFIX}/include" \
