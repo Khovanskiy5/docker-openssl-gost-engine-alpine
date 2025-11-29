@@ -1,0 +1,11 @@
+services:
+  openssl-gost:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        OPENSSL_VERSION: "3.6.0"
+    container_name: openssl-gost
+    environment:
+      - OPENSSL_CONF=/opt/openssl/ssl/openssl.cnf
+    command: ["openssl", "version", "-a"]
