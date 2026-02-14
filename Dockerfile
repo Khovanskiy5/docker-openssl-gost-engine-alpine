@@ -48,9 +48,6 @@ RUN cmake -S . -B build \
       -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=${OPENSSL_PREFIX} \
       -DOPENSSL_ROOT_DIR=${OPENSSL_PREFIX} \
-      -DOPENSSL_INCLUDE_DIR=${OPENSSL_PREFIX}/include \
-      -DOPENSSL_CRYPTO_LIBRARY=${OPENSSL_PREFIX}/lib/libcrypto.so \
-      -DOPENSSL_SSL_LIBRARY=${OPENSSL_PREFIX}/lib/libssl.so \
       -DOPENSSL_ENGINES_DIR=${OPENSSL_PREFIX}/lib/engines-3 \
     && ninja -C build -j${MAKE_JOBS} \
     && ninja -C build install
@@ -110,7 +107,13 @@ RUN apk add --no-cache \
       libidn2 \
       libpsl
 
-COPY --from=builder /tmp/rootfs/ /
+# Удаляем системный openssl, если он вдруг есть (в alpine его обычно нет в базе, но на всякий случай)
+RUN apk del openssl || true
+
+COPY --from=builder /opt/openssl /opt/openssl
+
+# Удаляем любые системные libcrypto.so.3 и libssl.so.3, которые могут мешать
+RUN rm -f /usr/lib/libcrypto.so.3 /usr/lib/libssl.so.3
 
 # Конфиг OpenSSL с подключённым GOST-движком
 RUN mkdir -p ${OPENSSL_PREFIX}/ssl
