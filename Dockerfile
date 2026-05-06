@@ -98,12 +98,14 @@ RUN cd /tmp/gost-engine/build && ninja -C . gostsum \
 # --- get-cpcert: утилита для извлечения сертификатов из контейнеров КриптоПро ---
 WORKDIR /tmp/get-cpcert
 RUN git clone --depth 1 https://github.com/kov-serg/get-cpcert.git . \
+    && GOST_ARCHIVES="$(find /tmp/gost-engine/build -name '*.a' | tr '\n' ' ')" \
     && gcc -o ${OPENSSL_PREFIX}/bin/get-cpcert \
+       -include openssl/pem.h \
+       -Wno-deprecated-declarations \
        -I/tmp/gost-engine \
        -I${OPENSSL_PREFIX}/include \
        get-cpcert.c \
-       /tmp/gost-engine/build/libgost_core.a \
-       /tmp/gost-engine/build/libgost_err.a \
+       -Wl,--start-group ${GOST_ARCHIVES} -Wl,--end-group \
        -L${OPENSSL_PREFIX}/lib \
        -lssl -lcrypto -lpthread -ldl \
     && chmod +x ${OPENSSL_PREFIX}/bin/get-cpcert
